@@ -28,7 +28,7 @@ const Login = (props: { setName: (name: string) => void }) => {
     if (response.status === 200) {
       setErr("");
       props.setName(await content.name);
-      navigate("/", { replace: true });
+      navigate("/");
     } else {
       setErr(content.message);
       return;
