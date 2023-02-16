@@ -13,6 +13,7 @@ const Register = () => {
   const [cPassword, setCPassword] = useState("");
   const [agreement, setAgreement] = useState(false);
   const [err, setErr] = useState("");
+  const [redirect, setRedirect] = useState(false);
   const navigate = useNavigate();
 
   const submit = async (e: SyntheticEvent) => {
@@ -35,7 +36,7 @@ const Register = () => {
     });
 
     if (response.status === 200) {
-      return navigate("/login");
+      setRedirect(true);
     } else {
       setErr(
         `このメールアドレスは既に登録済みです。
@@ -44,6 +45,10 @@ const Register = () => {
       return setTimeout(() => navigate("/login"), 3000);
     }
   };
+
+  if (redirect) {
+    navigate("/login");
+  }
 
   return (
     <>
