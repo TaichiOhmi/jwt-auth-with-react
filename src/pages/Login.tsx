@@ -4,7 +4,7 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { useNavigate } from "react-router-dom";
 
-const Login = () => {
+const Login = (props: { setName: (name: string) => void }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [err, setErr] = useState("");
@@ -23,12 +23,14 @@ const Login = () => {
       }),
     });
 
+    const content = await response.json();
+
     if (response.status === 200) {
       setErr("");
-      return navigate("/");
+      props.setName(await content.name);
+      navigate("/", { replace: true });
     } else {
-      const json = await response.json();
-      setErr(json.message);
+      setErr(content.message);
       return;
     }
   };
