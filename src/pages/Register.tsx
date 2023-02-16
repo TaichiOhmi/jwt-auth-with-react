@@ -13,20 +13,18 @@ const Register = () => {
   const [cPassword, setCPassword] = useState("");
   const [agreement, setAgreement] = useState(false);
   const [err, setErr] = useState("");
-  const [redirect, setRedirect] = useState(false);
   const navigate = useNavigate();
 
   const submit = async (e: SyntheticEvent) => {
     e.preventDefault();
-    console.log("submit");
     if (password !== cPassword) {
-      setErr("Password confirmation failed.");
+      setErr("確認パスワードが一致しません。");
       return;
     } else {
       setErr("");
     }
 
-    await fetch("http://127.0.0.1:8080/api/register", {
+    const response = await fetch("http://127.0.0.1:8080/api/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -36,9 +34,14 @@ const Register = () => {
       }),
     });
 
-    setRedirect(true);
-    if (redirect) {
+    if (response.status === 200) {
       return navigate("/login");
+    } else {
+      setErr(
+        `このメールアドレスは既に登録済みです。
+        3秒後にログインページにリダイレクトします。`
+      );
+      return setTimeout(() => navigate("/login"), 3000);
     }
   };
 
@@ -46,6 +49,14 @@ const Register = () => {
     <>
       <h1 className="text-center">Sign up</h1>
       <Form onSubmit={submit}>
+        {err !== "" && (
+          <span className="err">
+            <Alert key="danger" variant="danger">
+              {err}
+            </Alert>
+          </span>
+        )}
+
         <Form.Group className="mb-3" controlId="Name">
           <Form.Label>Name</Form.Label>
           <Form.Control
@@ -97,13 +108,7 @@ const Register = () => {
             </Form.Group>
           </Col>
         </Row>
-        {err !== "" && (
-          <span className="err">
-            <Alert key="danger" variant="danger">
-              {err}
-            </Alert>
-          </span>
-        )}
+
         <Form.Group className="mb-3" controlId="Checkbox">
           <Form.Check
             type="checkbox"
